@@ -37,7 +37,6 @@ const CreateItem = () => {
       return res.data;
     },
     onSuccess: (data) => {
-      console.log("✅ Post created successfully:", data);
       setMatches(data.matches || []);
       queryClient.invalidateQueries(["foundPosts"]);
       queryClient.invalidateQueries(["lostPosts"]);
