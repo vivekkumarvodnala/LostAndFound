@@ -7,8 +7,6 @@ import generateTokenAndSetCookie from "../utils/generateTokenAndCookie.js";
 
 export const register = async (req, res) => {
   try {
-    console.log("BODY:", JSON.stringify(req.body, null, 2));
-console.log("FILE:", req.file);
 
 
 const { name, email, phone, password } = req.body;
@@ -25,7 +23,6 @@ const newUser = new User({
 });
 
 await newUser.save();
-    console.log("User registered:", newUser);
 
     res.status(201).json({ message: "User registered", user: newUser });
   } catch (err) {
@@ -35,7 +32,6 @@ await newUser.save();
 // Login User
 export const login = async (req, res, next) => {
   try {
-    console.log("Login request body:", req.body);
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });

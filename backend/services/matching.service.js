@@ -20,13 +20,8 @@ export const findSimilarPosts = async (
 
   const similarity = cosineSimilarity(embedding, post.embedding);
 
-  console.log("================================");
-  console.log("Comparing with:", post.title);
-  console.log("Category:", post.category);
-  console.log("Similarity:", similarity);
 
   if (similarity >= threshold) {
-    console.log("✅ Match Found");
 
     matches.push({
       post,
