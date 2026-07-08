@@ -38,17 +38,8 @@ const Home = () => {
     queryFn: fetchFound,
   });
 
-  const filteredLostPosts = lostPosts?.filter((post) =>
-    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const filteredFoundPosts = foundPosts?.filter((post) =>
-    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const postsToRender = activeTab === "lost" ? filteredLostPosts : filteredFoundPosts;
+ 
+  const postsToRender = activeTab === "lost" ? lostPosts : foundPosts;
   const loading = activeTab === "lost" ? loadingLost : loadingFound;
   const error = activeTab === "lost" ? errorLost : errorFound;
   const success = activeTab === "lost" ? successLost : successFound;

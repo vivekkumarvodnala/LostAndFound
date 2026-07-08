@@ -36,7 +36,8 @@ const CreateItem = () => {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["posts"]);
+      queryClient.invalidateQueries(["foundPosts"]);
+      queryClient.invalidateQueries(["lostPosts"]);
       setFormData({
         title: "",
         description: "",  
