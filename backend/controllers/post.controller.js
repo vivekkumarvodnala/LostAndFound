@@ -1,10 +1,20 @@
 import Post from "../models/Post.js";
 import path from "path";
-
-// CREATE POST (no Cloudinary)
+import { semanticSearch } from "../services/semanticSearch.service.js";
+import { generateEmbedding } from "../services/embedding.service.js";
+import { findSimilarPosts } from "../services/matching.service.js";
 export const createPost = async (req, res, next) => {
   try {
-    const { title, description, category,location } = req.body;
+    const { title, description, category, location } = req.body;
+
+    const text = `
+      Title: ${title}
+      Description: ${description}
+      Location: ${location}
+    `;
+
+    const embedding = await generateEmbedding(text);
+    const matches = await findSimilarPosts(embedding, category);
 
     const post = new Post({
       title,
@@ -12,15 +22,19 @@ export const createPost = async (req, res, next) => {
       category,
       user: req.user.id,
       location,
+      embedding,
     });
 
-    // Store local image path if uploaded
     if (req.file) {
-      post.image = `/uploads/${req.file.filename}`; // accessible from frontend
+      post.image = `/uploads/${req.file.filename}`;
     }
 
     const savedPost = await post.save();
-    res.status(201).json(savedPost);
+
+    res.status(201).json({
+  post: savedPost,
+  matches,
+});
   } catch (err) {
     next(err);
   }
@@ -58,12 +72,8 @@ export const updatePost = async (req, res, next) => {
 export const getLostPosts = async (req, res, next) => {
   try {
     const searchQuery = req.query.search || "";
-    const regex = new RegExp(searchQuery, "i"); // case-insensitive
 
-    const posts = await Post.find({
-      category: "lost",
-      $or: [{ title: regex }, { description: regex }],
-    }).populate("user", "name email");
+    const posts = await semanticSearch(searchQuery, "lost");
 
     res.status(200).json(posts);
   } catch (err) {
@@ -74,12 +84,8 @@ export const getLostPosts = async (req, res, next) => {
 export const getFoundPosts = async (req, res, next) => {
   try {
     const searchQuery = req.query.search || "";
-    const regex = new RegExp(searchQuery, "i");
 
-    const posts = await Post.find({
-      category: "found",
-      $or: [{ title: regex }, { description: regex }],
-    }).populate("user", "name email");
+    const posts = await semanticSearch(searchQuery, "found");
 
     res.status(200).json(posts);
   } catch (err) {

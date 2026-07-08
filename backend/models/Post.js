@@ -5,8 +5,17 @@ const postSchema = new mongoose.Schema({
   description: String,
   category: { type: String, enum: ["lost", "found"], required: true },
   image: String,
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  location:{ type: String},
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  location: { type: String },
+
+  embedding: {
+    type: [Number],
+    default: [],
+  },
 }, { timestamps: true });
 
 export default mongoose.model("Post", postSchema);
