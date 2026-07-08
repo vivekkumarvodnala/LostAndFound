@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
 import { FaTag, FaPen, FaImages } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import {toast} from "react-hot-toast";
 import { useNavigate } from "react-router-dom"; 
 const CreateItem = () => {
   const navigate = useNavigate();
+  const [matches, setMatches] = useState([]); 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -26,7 +27,7 @@ const CreateItem = () => {
       data.append("location", formData.location);
       data.append("image", formData.image);
 
-      const res = await axios.post("/post", data, {
+      const res = await axiosInstance.post("/post", data, {
         withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -35,7 +36,9 @@ const CreateItem = () => {
 
       return res.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("✅ Post created successfully:", data);
+      setMatches(data.matches || []);
       queryClient.invalidateQueries(["foundPosts"]);
       queryClient.invalidateQueries(["lostPosts"]);
       setFormData({
@@ -46,7 +49,7 @@ const CreateItem = () => {
         image: null,
       });
       toast.success("Post created successfully!");
-      navigate("/");
+      // navigate("/");
       
     },
     onError: () => {
@@ -157,6 +160,44 @@ const CreateItem = () => {
             Submit Post
           </button>
         </form>
+        {matches.length > 0 && (
+  <div className="mt-8 border-t pt-6">
+    <h3 className="text-2xl font-bold text-[#800000] dark:text-yellow-400 mb-4">
+      🔍 Possible Matches
+    </h3>
+
+    {matches.map((match) => (
+      <div
+        key={match.post._id}
+        className="mb-4 rounded-xl border bg-gray-100 dark:bg-slate-700 p-4"
+      >
+        <h4 className="text-lg font-semibold">
+          {match.post.title}
+        </h4>
+
+        <p className="mt-1">
+          {match.post.description}
+        </p>
+
+        <p className="mt-1">
+          📍 {match.post.location}
+        </p>
+
+        <p className="mt-2 font-semibold text-green-600">
+          Similarity: {(match.similarity * 100).toFixed(2)}%
+        </p>
+
+        {match.post.image && (
+          <img
+            src={`http://localhost:9000${match.post.image}`}
+            alt={match.post.title}
+            className="mt-3 h-40 w-40 rounded-lg object-cover"
+          />
+        )}
+      </div>
+    ))}
+  </div>
+)}
       </div>
     </section>
   );

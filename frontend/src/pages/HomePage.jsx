@@ -108,9 +108,13 @@ const Home = () => {
         {/* Items Grid */}
         {success && postsToRender?.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {postsToRender.map((post) => (
-              <ItemCard key={post._id} post={post} />
-            ))}
+           {postsToRender.map((item) => (
+  <ItemCard
+    key={item.post._id}
+    post={item.post}
+    similarity={item.similarity}
+  />
+))}
           </div>
         )}
 

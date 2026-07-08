@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "../utils/axiosInstance";
 import { FiEdit, FiTrash, FiUser, FiClock } from "react-icons/fi";
 import { toast } from "react-hot-toast";
-const ItemCard = ({ post, showActions = false }) => {
+const ItemCard = ({ post, similarity,showActions = false }) => {
   const queryClient = useQueryClient();
 
   const handleDelete = async (e) => {
@@ -53,6 +53,11 @@ const ItemCard = ({ post, showActions = false }) => {
           <p className="text-sm text-gray-500">
   📍 {post.location}
 </p>
+        {similarity !== undefined && similarity !== null && (
+  <p className="text-sm font-semibold text-green-600 dark:text-green-400">
+    🤖 AI Match: {(similarity * 100).toFixed(2)}%
+  </p>
+)}
           <p className="flex items-center gap-2">
             <FiClock className="text-base" />
             <span>
