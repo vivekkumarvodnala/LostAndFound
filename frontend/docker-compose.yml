@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  backend:
+    image: lostfound-backend
+    container_name: backend-container
+    ports:
+      - "9000:9000"
+    env_file:
+      - ./backend/.env
+
+  frontend:
+    image: lostfound-frontend
+    container_name: frontend-container
+    ports:
+      - "3002:3002"
+    depends_on:
+      - backend
