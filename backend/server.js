@@ -7,6 +7,7 @@ import userRoutes from "./routes/user.router.js";
 import postRoutes from "./routes/post.router.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import cors from "cors";
+import helmet from "helmet";
 import contactRoute from "./routes/contact.js";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -20,6 +21,42 @@ connectDB();
 
 const app = express();
 
+// Secure the app with Helmet headers
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        baseUri: ["'self'"],
+        fontSrc: ["'self'", "https:", "data:"],
+        formAction: ["'self'"],
+        frameAncestors: ["'none'"],
+        imgSrc: ["'self'", "data:", "blob:"],
+        objectSrc: ["'none'"],
+        scriptSrc: ["'self'"],
+        scriptSrcAttr: ["'none'"],
+        styleSrc: ["'self'", "https:", "'unsafe-inline'"],
+        upgradeInsecureRequests: [],
+      },
+    },
+    frameguard: {
+      action: "deny",
+    },
+    noSniff: true,
+    referrerPolicy: {
+      policy: "strict-origin-when-cross-origin",
+    },
+    hsts: {
+      maxAge: 31536000, // 1 year
+      includeSubDomains: true,
+      preload: true,
+    },
+    crossOriginResourcePolicy: {
+      policy: "cross-origin", // Allow cross-origin requests for static images
+    },
+  })
+);
+
 // Static files for images
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
@@ -27,7 +64,6 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
 app.use(
   cors({
     origin: [
@@ -37,7 +73,6 @@ app.use(
     credentials: true,
   })
 );
-
 // Routes
 app.use("/api/contact", contactRoute);
 app.use("/api/auth", authRoutes);
